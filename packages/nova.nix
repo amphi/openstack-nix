@@ -1,7 +1,6 @@
 {
   castellan,
   cursive,
-  fetchPypi,
   futurist,
   gabbi,
   keystoneauth1,
@@ -45,6 +44,8 @@
   sqlalchemy,
   tooz,
   writeScript,
+  nova-src,
+  customPythonLibvirt,
 }:
 let
   inherit (python3Packages)
@@ -61,7 +62,6 @@ let
     iso8601
     jinja2
     jsonschema
-    libvirt
     lxml
     netaddr
     netifaces
@@ -104,7 +104,6 @@ let
 in
 python3Packages.buildPythonPackage (rec {
   pname = "nova";
-  version = "30.0.0";
   pyproject = true;
   build-system = [
     python3Packages.pbr
@@ -145,7 +144,7 @@ python3Packages.buildPythonPackage (rec {
     jsonschema
     keystoneauth1
     keystonemiddleware
-    libvirt
+    customPythonLibvirt
     lxml
     microversion-parse
     netaddr
@@ -231,12 +230,22 @@ python3Packages.buildPythonPackage (rec {
     stestr run --exclude-list ${excludeListFile}
   '';
 
+  postInstall = ''
+    for database in api main; do
+      install -Dm644 "nova/db/$database/alembic.ini" \
+        "$out/${python3Packages.python.sitePackages}/nova/db/$database/alembic.ini"
+      cp -r "nova/db/$database/migrations" \
+        "$out/${python3Packages.python.sitePackages}/nova/db/$database/"
+    done
+  '';
+
   pythonImportsCheck = [
+    "nova.virt.libvirt.driver"
+    "nova.virt.libvirt.volume.volume"
     "nova.virt.disk.api"
   ];
 
-  src = fetchPypi {
-    inherit pname version;
-    sha256 = "sha256-CvxHrKGalX/9FMFVX14Bm47sjgqQNgfVX6Odf2IMgqQ=";
-  };
+  src = nova-src;
+  version = "28.1.0-block-encryption-poc";
+  PBR_VERSION = "28.1.0";
 })

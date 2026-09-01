@@ -3,6 +3,9 @@
   python3Packages,
   writeText,
   lib,
+  cinder-src,
+  nova-src,
+  customPythonLibvirt,
 }:
 let
   # In the past, the packages was not ready for the latest python interpreter.
@@ -10,6 +13,31 @@ let
   # the interpreter in the toplevel, to avoid a change for every single package
   openstackPkgs = rec {
     automaton = callPackage ./automaton.nix { inherit python3Packages; };
+    barbican = callPackage ./barbican.nix {
+      inherit
+        castellan
+        keystonemiddleware
+        microversion-parse
+        oslo-config
+        oslo-context
+        oslo-db
+        oslo-i18n
+        oslo-log
+        oslo-messaging
+        oslo-middleware
+        oslo-serialization
+        oslo-service
+        oslo-utils
+        oslo-versionedobjects
+        oslotest
+        pycadf
+        python-keystoneclient
+        python3Packages
+        sqlalchemy
+        ;
+      oslo-policy = oslo-policy-barbican;
+      oslo-upgradecheck = oslo-upgradecheck-barbican;
+    };
     castellan = callPackage ./castellan.nix {
       inherit
         keystoneauth1
@@ -67,6 +95,7 @@ let
         python-swiftclient
         taskflow
         tooz
+        cinder-src
         ;
     };
     django = callPackage ./django.nix { inherit python3Packages; };
@@ -382,6 +411,8 @@ let
         python3Packages
         sqlalchemy
         tooz
+        nova-src
+        customPythonLibvirt
         ;
     };
     openstack-placement = callPackage ./openstack-placement.nix {
@@ -599,6 +630,19 @@ let
         python3Packages
         ;
     };
+    oslo-policy-barbican = callPackage ./oslo-policy.nix {
+      inherit
+        oslo-config
+        oslo-context
+        oslo-i18n
+        oslo-serialization
+        oslo-utils
+        oslotest
+        python3Packages
+        ;
+      version = "4.5.0";
+      hash = "sha256-Wt5pgfGKM8ORJ0ovAA4ct7ESKHs9hKeUEl9GUGIzPGo=";
+    };
     oslo-privsep = callPackage ./oslo-privsep.nix {
       inherit
         oslo-concurrency
@@ -656,6 +700,9 @@ let
         pre-commit
         python3Packages
         ;
+    };
+    oslo-upgradecheck-barbican = oslo-upgradecheck.override {
+      oslo-policy = oslo-policy-barbican;
     };
     oslo-utils = callPackage ./oslo-utils.nix {
       inherit

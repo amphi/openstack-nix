@@ -24,6 +24,9 @@ let
       cinder_env
       pkgs.qemu
       pkgs.tgt
+      pkgs.cryptsetup
+      pkgs.coreutils
+      pkgs.util-linux
     ];
   };
 
@@ -67,6 +70,15 @@ let
 
     [oslo_concurrency]
     lock_path = /var/lib/cinder/tmp
+
+    [key_manager]
+    backend = barbican
+
+    [barbican]
+    auth_endpoint = http://controller:5000/v3
+    barbican_endpoint = http://controller:9311
+    barbican_region_name = RegionOne
+    barbican_endpoint_type = internal
 
     [lvm]
     volume_driver = cinder.volume.drivers.lvm.LVMVolumeDriver
@@ -116,6 +128,19 @@ let
     volume_driver = cinder.volume.drivers.nfs.NfsDriver
     nfs_shares_config = /etc/cinder/nfs_shares
     nfs_mount_options = vers=3
+    volume_backend_name = NFS
+    volume_format = raw
+    nfs_sparsed_volumes = false
+    nfs_qcow2_volumes = false
+
+    [key_manager]
+    backend = barbican
+
+    [barbican]
+    auth_endpoint = http://controller:5000/v3
+    barbican_endpoint = http://controller:9311
+    barbican_region_name = RegionOne
+    barbican_endpoint_type = internal
   '';
 
   cinderTgtConf = pkgs.writeText "cinder.conf" ''
@@ -299,12 +324,18 @@ in
               set -euxo pipefail
 
               # create a filesystem and mount and export it
-              mkdir /exports
-              mkfs.ext4 -F -m 0 /dev/vdb
-              mount /dev/vdb /exports
-              exportfs -rv
+              mkdir -p /exports
+              if ! blkid /dev/vdb; then
+                mkfs.ext4 -F -m 0 /dev/vdb
+              fi
+              mountpoint -q /exports || mount /dev/vdb /exports
             '';
       };
+    };
+
+    systemd.services.nfs-server = mkIf (cfg.backend == "nfs") {
+      after = [ "cinder-volume-group-setup.service" ];
+      requires = [ "cinder-volume-group-setup.service" ];
     };
 
     # It seems regardless of what we do, the cinder-volume service does not
@@ -325,13 +356,21 @@ in
           qemu
           nfs-utils
           e2fsprogs
+          cryptsetup
+          util-linux
         ];
 
     systemd.services.cinder-volume = {
       description = "OpenStack Cinder Volume";
       after = [
         "cinder-volume-group-setup.service"
-      ];
+        "network-online.target"
+      ]
+      ++ optional (cfg.backend == "nfs") "nfs-server.service";
+      requires = [
+        "cinder-volume-group-setup.service"
+      ]
+      ++ optional (cfg.backend == "nfs") "nfs-server.service";
       path =
         if (cfg.backend == "lvm") then
           with pkgs;
@@ -340,6 +379,8 @@ in
             lvm2
             tgt
             qemu-utils
+            cryptsetup
+            util-linux
             # sudo must be in the path and only sudo in /run/wrappers has the
             # correct owner and rights
             "/run/wrappers"
@@ -350,6 +391,8 @@ in
             cinder_env
             lvm2
             qemu-utils
+            cryptsetup
+            util-linux
             # sudo must be in the path and only sudo in /run/wrappers has the
             # correct owner and rights
             "/run/wrappers"

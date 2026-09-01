@@ -6,6 +6,7 @@
   placement,
   horizon,
   cinder,
+  barbican,
 }:
 {
   config,
@@ -34,6 +35,7 @@ in
     (import ./neutron.nix { inherit neutron; })
     (import ./horizon.nix { inherit horizon; })
     (import ./cinder.nix { inherit cinder; }) # only cinder management component
+    (import ./barbican.nix { inherit barbican; })
   ];
 
   config = {
@@ -67,6 +69,12 @@ in
           mysql -N -e "create database cinder;" || true
           mysql -N -e "GRANT ALL PRIVILEGES ON cinder.* TO 'cinder'@'localhost' IDENTIFIED BY 'cinder';"
           mysql -N -e "GRANT ALL PRIVILEGES ON cinder.* TO 'cinder'@'%' IDENTIFIED BY 'cinder';"
+
+          # barbican
+          mysql -N -e "drop database barbican;" || true
+          mysql -N -e "create database barbican;" || true
+          mysql -N -e "GRANT ALL PRIVILEGES ON barbican.* TO 'barbican'@'localhost' IDENTIFIED BY 'barbican';"
+          mysql -N -e "GRANT ALL PRIVILEGES ON barbican.* TO 'barbican'@'%' IDENTIFIED BY 'barbican';"
 
           # Placement
           mysql -N -e "drop database placement;" || true
@@ -154,6 +162,34 @@ in
       };
     };
 
+    systemd.services.barbican = {
+      description = "OpenStack barbican setup";
+      after = [ "keystone-all.service" ];
+      wantedBy = [ "multi-user.target" ];
+      environment = adminEnv;
+      path = [
+        pkgs.openstackclient
+        config.barbican.barbicanPackage
+      ];
+      serviceConfig = {
+        Type = "oneshot";
+        User = "barbican";
+        Group = "barbican";
+        ExecStart = pkgs.writeShellScript "barbican.sh" ''
+          set -euxo pipefail
+          openstack user show barbican >/dev/null 2>&1 || \
+            openstack user create --domain default --password barbican barbican
+          openstack role show creator >/dev/null 2>&1 || \
+            openstack role create creator
+          openstack role add --project service --user barbican admin
+          openstack role add --project admin --user admin creator
+          openstack role add --user barbican --user-domain default --system all reader
+          barbican-manage --config-file ${config.barbican.config} db upgrade
+          barbican-manage --config-file ${config.barbican.config} db sync_secret_stores
+        '';
+      };
+    };
+
     systemd.services.cinder = {
       description = "OpenStack Cinder setup";
       after = [ "keystone-all.service" ];
@@ -161,7 +197,7 @@ in
       environment = adminEnv;
       path = [
         pkgs.openstackclient
-        cinder
+        config.cinder.cinderPackage
       ];
       serviceConfig = {
         Type = "oneshot";
@@ -169,9 +205,11 @@ in
         Group = "cinder";
         ExecStart = pkgs.writeShellScript "cinder.sh" ''
           set -euxo pipefail
-          openstack user create --domain default --password cinder cinder || true
-          openstack role add --project service --user cinder admin  || true
-          openstack role add --user cinder --user-domain default --system all reader || true
+          openstack user show cinder >/dev/null 2>&1 || \
+            openstack user create --domain default --password cinder cinder
+          openstack user set --password cinder cinder
+          openstack role add --project service --user cinder admin
+          openstack role add --user cinder --user-domain default --system all reader
           cinder-manage --config-file ${config.cinder.config} db sync
         '';
       };

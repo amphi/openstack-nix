@@ -1,4 +1,10 @@
-{ nova }:
+{
+  nova,
+  libvirt-chv,
+  cloud-hypervisor,
+  chv-ovmf,
+  luks-vhost-blk,
+}:
 {
   config,
   lib,
@@ -25,7 +31,7 @@ let
     state_path = /var/lib/nova
     rootwrap_config = ${rootwrapConf}
     compute_driver = libvirt.LibvirtDriver
-    my_ip = 10.0.0.39
+    my_ip = ${cfg.myIp}
     transport_url = rabbit://openstack:openstack@controller
 
     [api]
@@ -52,7 +58,9 @@ let
     password = nova
 
     [libvirt]
-    virt_type = kvm
+    virt_type = ch
+    connection_uri = ch:///system
+    images_type = raw
 
     [neutron]
     auth_url = http://controller:5000
@@ -92,9 +100,7 @@ let
     password = nova
 
     [serial_console]
-    enabled = true
-    serialproxy_host = 0.0.0.0
-    proxyclient_address = $my_ip
+    enabled = false
 
     [vnc]
     enabled = true
@@ -110,6 +116,15 @@ let
 
     [cinder]
     os_region_name = RegionOne
+
+    [key_manager]
+    backend = barbican
+
+    [barbican]
+    auth_endpoint = http://controller:5000/v3
+    barbican_endpoint = http://controller:9311
+    barbican_region_name = RegionOne
+    barbican_endpoint_type = internal
   '';
 
   rootwrapConf = pkgs.callPackage ../../lib/rootwrap-conf.nix {
@@ -122,6 +137,11 @@ in
   options.nova = {
     enable = mkEnableOption "Enable OpenStack Nova." // {
       default = true;
+    };
+    myIp = mkOption {
+      default = "10.0.0.39";
+      type = types.str;
+      description = "Management address advertised by nova-compute.";
     };
     config = mkOption {
       default = novaConf;
@@ -157,9 +177,31 @@ in
     };
 
     # Nova requires libvirtd and RabbitMQ.
-    virtualisation.libvirtd.enable = true;
+    virtualisation.libvirtd = {
+      enable = true;
+      package = libvirt-chv;
+    };
+
+    boot.kernelModules = [
+      "dm_crypt"
+      "dm_mod"
+      "loop"
+    ];
 
     systemd.tmpfiles.settings = {
+      "10-libvirt-ch" = {
+        "/usr/share/cloud-hypervisor".d = {
+          group = "root";
+          mode = "0755";
+          user = "root";
+        };
+        "/usr/share/cloud-hypervisor/CLOUDHV_EFI.fd"."L+".argument = "${chv-ovmf}";
+        "/var/log/libvirt/ch".d = {
+          group = "root";
+          mode = "0755";
+          user = "root";
+        };
+      };
       "10-nova" = {
         "/var/log/nova" = {
           D = {
@@ -198,36 +240,77 @@ in
       name = "iqn.iscsi.${config.networking.hostName}";
     };
 
-    environment.systemPackages = with pkgs; [
-      openiscsi
-      nfs-utils
+    environment.systemPackages = [
+      pkgs.openiscsi
+      pkgs.nfs-utils
+      pkgs.cryptsetup
+      luks-vhost-blk
+      cloud-hypervisor
     ];
 
-    systemd.services.nova-compute = {
-      description = "OpenStack Nova Scheduler Daemon";
-      after = [
-        "rabbitmq.service"
-        "network.target"
-      ];
-      wantedBy = [ "multi-user.target" ];
-      path =
-        with pkgs;
-        [
-          sudo
-          nova_env
-          qemu
-          util-linux
-          lvm2
-          openiscsi
-          nfs-utils
-        ]
-        ++ cfg.extraPkgs;
-      environment.PYTHONPATH = "${nova_env}/${pkgs.python3.sitePackages}";
-      serviceConfig = {
-        ExecStart = pkgs.writeShellScript "nova-compute.sh" ''
-          ${cfg.novaPackage}/bin/nova-compute --config-file=${cfg.config}
-        '';
+    systemd = {
+      services = {
+        nova-compute = {
+          description = "OpenStack Nova Scheduler Daemon";
+          after = [
+            "rabbitmq.service"
+            "network.target"
+            "virtchd.socket"
+            "virtsecretd.socket"
+            "openvswitch.service"
+          ];
+          wants = [
+            "virtchd.socket"
+            "virtsecretd.socket"
+          ];
+          wantedBy = [ "multi-user.target" ];
+          path =
+            with pkgs;
+            [
+              sudo
+              nova_env
+              qemu
+              util-linux
+              lvm2
+              openiscsi
+              nfs-utils
+              "/run/wrappers"
+            ]
+            ++ cfg.extraPkgs;
+          environment.PYTHONPATH = "${nova_env}/${pkgs.python3.sitePackages}";
+          serviceConfig = {
+            ExecStart = pkgs.writeShellScript "nova-compute.sh" ''
+              ${cfg.novaPackage}/bin/nova-compute --config-file=${cfg.config}
+            '';
+          };
+        };
+
+        virtchd = {
+          path = mkForce [
+            pkgs.cryptsetup
+            pkgs.dmidecode
+            pkgs.openssh
+            pkgs.util-linux
+            luks-vhost-blk
+            cloud-hypervisor
+          ];
+          serviceConfig = {
+            AmbientCapabilities = [ "CAP_SYS_ADMIN" ];
+          };
+        };
+
+        virt-secret-init-encryption.serviceConfig = {
+          StateDirectory = "libvirt/secrets";
+          StateDirectoryMode = "0700";
+        };
       };
+
+      sockets.virtsecretd.wantedBy = [ "sockets.target" ];
     };
+
+    security.sudo.extraConfig = ''
+      nova ALL = (root) NOPASSWD: \
+        ${nova_env}/bin/nova-rootwrap ${rootwrapConf} *
+    '';
   };
 }

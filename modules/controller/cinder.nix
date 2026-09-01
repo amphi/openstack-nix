@@ -26,8 +26,8 @@ let
     auth_url = http://controller:5000
     memcached_servers = controller:11211
     auth_type = password
-    project_domain_name = default
-    user_domain_name = default
+    project_domain_id = default
+    user_domain_id = default
     project_name = service
     username = cinder
     password = cinder
@@ -36,6 +36,15 @@ let
 
     [oslo_concurrency]
     lock_path = /var/lib/cinder/tmp
+
+    [key_manager]
+    backend = barbican
+
+    [barbican]
+    auth_endpoint = http://controller:5000/v3
+    barbican_endpoint = http://controller:9311
+    barbican_region_name = RegionOne
+    barbican_endpoint_type = internal
   '';
 in
 {
@@ -93,12 +102,12 @@ in
         };
         "/etc/cinder/api-paste.ini" = {
           L = {
-            argument = "${cinder}/etc/cinder/api-paste.ini";
+            argument = "${cfg.cinderPackage}/etc/cinder/api-paste.ini";
           };
         };
         "/etc/cinder/cinder.conf" = {
           L = {
-            argument = "${cinderConf}";
+            argument = "${cfg.config}";
           };
         };
       };
@@ -112,7 +121,7 @@ in
         "mysql.service"
         "network.target"
       ];
-      path = [ cinder ];
+      path = [ cfg.cinderPackage ];
       wantedBy = [ "multi-user.target" ];
       serviceConfig = {
         User = "cinder";
@@ -131,7 +140,7 @@ in
         "mysql.service"
         "network.target"
       ];
-      path = [ cinder ];
+      path = [ cfg.cinderPackage ];
       wantedBy = [ "multi-user.target" ];
       serviceConfig = {
         User = "cinder";

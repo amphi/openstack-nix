@@ -1,5 +1,214 @@
 {
   "nodes": {
+    "cinder-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1788165462,
+        "narHash": "sha256-EAi7iyO6/JgyXVzi7bpgU9ZFkxZw7AwCQ+8dbeKNgyQ=",
+        "owner": "amphi",
+        "repo": "cinder",
+        "rev": "eb27b3a399e70120c152ef4d50bfd18c83f6c337",
+        "type": "github"
+      },
+      "original": {
+        "owner": "amphi",
+        "ref": "block-encryption-poc",
+        "repo": "cinder",
+        "type": "github"
+      }
+    },
+    "cloud-hypervisor": {
+      "inputs": {
+        "crane": "crane",
+        "dried-nix-flakes": "dried-nix-flakes",
+        "nixpkgs": [
+          "nixpkgs"
+        ],
+        "rust-overlay": "rust-overlay"
+      },
+      "locked": {
+        "lastModified": 1788425133,
+        "narHash": "sha256-ww+loAP80oie2idFx6HlvDt77gzEZPJhFjwnBtMllaw=",
+        "owner": "cyberus-technology",
+        "repo": "cloud-hypervisor",
+        "rev": "71d31302f7eac48fe503361c6ae80ee08554fbcd",
+        "type": "github"
+      },
+      "original": {
+        "owner": "cyberus-technology",
+        "ref": "gardenlinux",
+        "repo": "cloud-hypervisor",
+        "type": "github"
+      }
+    },
+    "cloud-hypervisor-prev": {
+      "inputs": {
+        "crane": "crane_2",
+        "dried-nix-flakes": "dried-nix-flakes_2",
+        "nixpkgs": [
+          "libvirt-chv",
+          "nixpkgs"
+        ],
+        "rust-overlay": "rust-overlay_2"
+      },
+      "locked": {
+        "lastModified": 1776434782,
+        "narHash": "sha256-pVHstghEM7OfAq4nBdZNMQr1QdhCvcwLmMxquRNVuVU=",
+        "owner": "cyberus-technology",
+        "repo": "cloud-hypervisor",
+        "rev": "c5d32dd5f2d897fac6b7e0c5640c181e8a71e5aa",
+        "type": "github"
+      },
+      "original": {
+        "owner": "cyberus-technology",
+        "ref": "gardenlinux-release-26-04-20",
+        "repo": "cloud-hypervisor",
+        "type": "github"
+      }
+    },
+    "crane": {
+      "locked": {
+        "lastModified": 1781825982,
+        "narHash": "sha256-SlXKwIRIhrOSAcTjCB3ftPLzJWZStQIPS7J1FlZPnKk=",
+        "owner": "ipetkov",
+        "repo": "crane",
+        "rev": "469fd08d0bcf6926321fa973c6777fbc87785dd7",
+        "type": "github"
+      },
+      "original": {
+        "owner": "ipetkov",
+        "ref": "master",
+        "repo": "crane",
+        "type": "github"
+      }
+    },
+    "crane_2": {
+      "locked": {
+        "lastModified": 1772560058,
+        "narHash": "sha256-NuVKdMBJldwUXgghYpzIWJdfeB7ccsu1CC7B+NfSoZ8=",
+        "owner": "ipetkov",
+        "repo": "crane",
+        "rev": "db590d9286ed5ce22017541e36132eab4e8b3045",
+        "type": "github"
+      },
+      "original": {
+        "owner": "ipetkov",
+        "ref": "master",
+        "repo": "crane",
+        "type": "github"
+      }
+    },
+    "crane_3": {
+      "locked": {
+        "lastModified": 1780532242,
+        "narHash": "sha256-D+BsdpxmtUwtqGoY0IXPhHgTlmqgcZKCEo1oMyn7ep0=",
+        "owner": "ipetkov",
+        "repo": "crane",
+        "rev": "59a82a1222dd3b2080b5cc52a1a2e8d5f1b77f37",
+        "type": "github"
+      },
+      "original": {
+        "owner": "ipetkov",
+        "ref": "master",
+        "repo": "crane",
+        "type": "github"
+      }
+    },
+    "crane_4": {
+      "locked": {
+        "lastModified": 1780532242,
+        "narHash": "sha256-D+BsdpxmtUwtqGoY0IXPhHgTlmqgcZKCEo1oMyn7ep0=",
+        "owner": "ipetkov",
+        "repo": "crane",
+        "rev": "59a82a1222dd3b2080b5cc52a1a2e8d5f1b77f37",
+        "type": "github"
+      },
+      "original": {
+        "owner": "ipetkov",
+        "ref": "master",
+        "repo": "crane",
+        "type": "github"
+      }
+    },
+    "dried-nix-flakes": {
+      "locked": {
+        "lastModified": 1756139350,
+        "narHash": "sha256-pObQv94NclXVXjJV8sTiKwFes4fGEWpkNzDsXw5DqnY=",
+        "owner": "cyberus-technology",
+        "repo": "dried-nix-flakes",
+        "rev": "1b2ba62710c6c1d9eba0e8e3adc029cc2e9291a4",
+        "type": "github"
+      },
+      "original": {
+        "owner": "cyberus-technology",
+        "repo": "dried-nix-flakes",
+        "type": "github"
+      }
+    },
+    "dried-nix-flakes_2": {
+      "locked": {
+        "lastModified": 1756139350,
+        "narHash": "sha256-pObQv94NclXVXjJV8sTiKwFes4fGEWpkNzDsXw5DqnY=",
+        "owner": "cyberus-technology",
+        "repo": "dried-nix-flakes",
+        "rev": "1b2ba62710c6c1d9eba0e8e3adc029cc2e9291a4",
+        "type": "github"
+      },
+      "original": {
+        "owner": "cyberus-technology",
+        "repo": "dried-nix-flakes",
+        "type": "github"
+      }
+    },
+    "dried-nix-flakes_3": {
+      "locked": {
+        "lastModified": 1756139350,
+        "narHash": "sha256-pObQv94NclXVXjJV8sTiKwFes4fGEWpkNzDsXw5DqnY=",
+        "owner": "cyberus-technology",
+        "repo": "dried-nix-flakes",
+        "rev": "1b2ba62710c6c1d9eba0e8e3adc029cc2e9291a4",
+        "type": "github"
+      },
+      "original": {
+        "owner": "cyberus-technology",
+        "repo": "dried-nix-flakes",
+        "type": "github"
+      }
+    },
+    "dried-nix-flakes_4": {
+      "locked": {
+        "lastModified": 1756139350,
+        "narHash": "sha256-pObQv94NclXVXjJV8sTiKwFes4fGEWpkNzDsXw5DqnY=",
+        "owner": "cyberus-technology",
+        "repo": "dried-nix-flakes",
+        "rev": "1b2ba62710c6c1d9eba0e8e3adc029cc2e9291a4",
+        "type": "github"
+      },
+      "original": {
+        "owner": "cyberus-technology",
+        "repo": "dried-nix-flakes",
+        "type": "github"
+      }
+    },
+    "edk2-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1772632652,
+        "narHash": "sha256-cuU4f9U4zAj03cDhirjru4XSVM5WjpW59wEiiR3Qa/Q=",
+        "ref": "gardenlinux",
+        "rev": "1d892a18e3c6b0e4ead9ab26c9a4f648bbf31476",
+        "revCount": 35525,
+        "submodules": true,
+        "type": "git",
+        "url": "https://github.com/cyberus-technology/edk2"
+      },
+      "original": {
+        "ref": "gardenlinux",
+        "submodules": true,
+        "type": "git",
+        "url": "https://github.com/cyberus-technology/edk2"
+      }
+    },
     "flake-compat": {
       "flake": false,
       "locked": {
@@ -29,8 +238,9 @@
         "type": "github"
       },
       "original": {
-        "id": "flake-utils",
-        "type": "indirect"
+        "owner": "numtide",
+        "repo": "flake-utils",
+        "type": "github"
       }
     },
     "gitignore": {
@@ -54,6 +264,127 @@
         "type": "github"
       }
     },
+    "keycodemapdb": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1752156361,
+        "narHash": "sha256-gfrQPAwgShtgkDWZOkivDO1Aj7UUdaGTitirGy+RA70=",
+        "ref": "refs/heads/master",
+        "rev": "54788039c0b3486a8883090d6736c2500177af29",
+        "revCount": 89,
+        "type": "git",
+        "url": "https://gitlab.com/keycodemap/keycodemapdb.git"
+      },
+      "original": {
+        "type": "git",
+        "url": "https://gitlab.com/keycodemap/keycodemapdb.git"
+      }
+    },
+    "libvirt-chv": {
+      "inputs": {
+        "cloud-hypervisor": [
+          "cloud-hypervisor"
+        ],
+        "cloud-hypervisor-prev": "cloud-hypervisor-prev",
+        "edk2-src": "edk2-src",
+        "keycodemapdb": "keycodemapdb",
+        "libvirt-prev": "libvirt-prev",
+        "luks-vhost-blk": "luks-vhost-blk",
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1787316752,
+        "narHash": "sha256-hsT/NhxNKbqP3j1TFX9ucigcIJmdjEpIp9l1hCbj4Ic=",
+        "ref": "block-encryption-poc",
+        "rev": "059e0a3d5e162b5dfcd9940415d66526a7f8c5f8",
+        "revCount": 54475,
+        "submodules": true,
+        "type": "git",
+        "url": "https://github.com/amphi/libvirt"
+      },
+      "original": {
+        "ref": "block-encryption-poc",
+        "submodules": true,
+        "type": "git",
+        "url": "https://github.com/amphi/libvirt"
+      }
+    },
+    "libvirt-prev": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1776433413,
+        "narHash": "sha256-ZC35yk0/0KMeotEwYNhdshPu2kO4a+xeGTjemriEm4A=",
+        "ref": "refs/tags/gardenlinux-release-26-04-20",
+        "rev": "55976a694dd7db37c110ef583e60a2421d188ccf",
+        "revCount": 54160,
+        "submodules": true,
+        "type": "git",
+        "url": "https://github.com/cyberus-technology/libvirt"
+      },
+      "original": {
+        "ref": "refs/tags/gardenlinux-release-26-04-20",
+        "submodules": true,
+        "type": "git",
+        "url": "https://github.com/cyberus-technology/libvirt"
+      }
+    },
+    "luks-vhost-blk": {
+      "inputs": {
+        "cloud-hypervisor": [
+          "libvirt-chv",
+          "cloud-hypervisor"
+        ],
+        "crane": "crane_3",
+        "dried-nix-flakes": "dried-nix-flakes_3",
+        "nixpkgs": [
+          "libvirt-chv",
+          "nixpkgs"
+        ],
+        "rust-overlay": "rust-overlay_3"
+      },
+      "locked": {
+        "lastModified": 1787150618,
+        "narHash": "sha256-UPBBFeRY0aDnA+rMZjEcTK7b3a/iBAQgJH7bIcsKC00=",
+        "owner": "amphi",
+        "repo": "luks-vhost-blk",
+        "rev": "5761b151ce9320fa5814d5aa6a3dd64c0efda757",
+        "type": "github"
+      },
+      "original": {
+        "owner": "amphi",
+        "repo": "luks-vhost-blk",
+        "type": "github"
+      }
+    },
+    "luks-vhost-blk_2": {
+      "inputs": {
+        "cloud-hypervisor": [
+          "libvirt-chv",
+          "cloud-hypervisor"
+        ],
+        "crane": "crane_4",
+        "dried-nix-flakes": "dried-nix-flakes_4",
+        "nixpkgs": [
+          "nixpkgs"
+        ],
+        "rust-overlay": "rust-overlay_4"
+      },
+      "locked": {
+        "lastModified": 1787150618,
+        "narHash": "sha256-UPBBFeRY0aDnA+rMZjEcTK7b3a/iBAQgJH7bIcsKC00=",
+        "owner": "amphi",
+        "repo": "luks-vhost-blk",
+        "rev": "5761b151ce9320fa5814d5aa6a3dd64c0efda757",
+        "type": "github"
+      },
+      "original": {
+        "owner": "amphi",
+        "repo": "luks-vhost-blk",
+        "type": "github"
+      }
+    },
     "nixpkgs": {
       "locked": {
         "lastModified": 1785386831,
@@ -67,6 +398,23 @@
         "owner": "nixos",
         "ref": "nixos-26.05",
         "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "nova-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1788183800,
+        "narHash": "sha256-6hqHsPjawGx0hf5BclFOkRLZk6BJa+xnH1dToIcw4zU=",
+        "owner": "amphi",
+        "repo": "nova",
+        "rev": "79fa227a6d655e87036b61e255038c14836e49b0",
+        "type": "github"
+      },
+      "original": {
+        "owner": "amphi",
+        "ref": "block-encryption-poc",
+        "repo": "nova",
         "type": "github"
       }
     },
@@ -94,9 +442,100 @@
     },
     "root": {
       "inputs": {
+        "cinder-src": "cinder-src",
+        "cloud-hypervisor": "cloud-hypervisor",
         "flake-utils": "flake-utils",
+        "libvirt-chv": "libvirt-chv",
+        "luks-vhost-blk": "luks-vhost-blk_2",
         "nixpkgs": "nixpkgs",
+        "nova-src": "nova-src",
         "pre-commit-hooks-nix": "pre-commit-hooks-nix"
+      }
+    },
+    "rust-overlay": {
+      "inputs": {
+        "nixpkgs": [
+          "cloud-hypervisor",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1782357464,
+        "narHash": "sha256-mXgoT1qDHCdSfF9IvhMtEEFNy9dxrmUfSViwP7RpzOQ=",
+        "owner": "oxalica",
+        "repo": "rust-overlay",
+        "rev": "77a8263847fb02dc49dbe377278ef6b952f1c6bb",
+        "type": "github"
+      },
+      "original": {
+        "owner": "oxalica",
+        "repo": "rust-overlay",
+        "type": "github"
+      }
+    },
+    "rust-overlay_2": {
+      "inputs": {
+        "nixpkgs": [
+          "libvirt-chv",
+          "cloud-hypervisor-prev",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1772679930,
+        "narHash": "sha256-FxYmdacqrdDVeE9QqZKTIpNLjv2B8GSKssgwlZuTR98=",
+        "owner": "oxalica",
+        "repo": "rust-overlay",
+        "rev": "9b741db17141331fdb26270a1b66b81be8be9edd",
+        "type": "github"
+      },
+      "original": {
+        "owner": "oxalica",
+        "repo": "rust-overlay",
+        "type": "github"
+      }
+    },
+    "rust-overlay_3": {
+      "inputs": {
+        "nixpkgs": [
+          "libvirt-chv",
+          "luks-vhost-blk",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1780888890,
+        "narHash": "sha256-MUQPFiskEENaJ2N82TRIqpKlHXGXJJkPfKH6W788oQo=",
+        "owner": "oxalica",
+        "repo": "rust-overlay",
+        "rev": "7d5f8d75fc195a236b46633d7679139698aeb35f",
+        "type": "github"
+      },
+      "original": {
+        "owner": "oxalica",
+        "repo": "rust-overlay",
+        "type": "github"
+      }
+    },
+    "rust-overlay_4": {
+      "inputs": {
+        "nixpkgs": [
+          "luks-vhost-blk",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1780888890,
+        "narHash": "sha256-MUQPFiskEENaJ2N82TRIqpKlHXGXJJkPfKH6W788oQo=",
+        "owner": "oxalica",
+        "repo": "rust-overlay",
+        "rev": "7d5f8d75fc195a236b46633d7679139698aeb35f",
+        "type": "github"
+      },
+      "original": {
+        "owner": "oxalica",
+        "repo": "rust-overlay",
+        "type": "github"
       }
     },
     "systems": {

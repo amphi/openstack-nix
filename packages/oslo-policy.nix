@@ -7,6 +7,8 @@
   oslo-utils,
   oslotest,
   python3Packages,
+  version ? "4.4.0",
+  hash ? "sha256-LV9QyLq8vLgOHuQLKv+3y0ZGUP37HZZUoU3fWxk2mcU=",
 }:
 let
   inherit (python3Packages)
@@ -21,7 +23,7 @@ let
 in
 python3Packages.buildPythonPackage rec {
   pname = "oslo.policy";
-  version = "4.4.0";
+  inherit version;
 
   pyproject = true;
   build-system = [
@@ -57,6 +59,6 @@ python3Packages.buildPythonPackage rec {
 
   src = fetchPypi {
     inherit pname version;
-    sha256 = "sha256-LV9QyLq8vLgOHuQLKv+3y0ZGUP37HZZUoU3fWxk2mcU=";
+    sha256 = hash;
   };
 }

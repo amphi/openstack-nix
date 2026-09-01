@@ -1,7 +1,6 @@
 {
   castellan,
   cursive,
-  fetchPypi,
   keystoneauth1,
   keystonemiddleware,
   lib,
@@ -35,14 +34,17 @@
   taskflow,
   tooz,
   writeScript,
+  cinder-src,
 }:
 let
   inherit (python3Packages)
+    boto3
     ddt
     distro
     eventlet
     google-api-python-client
     hacking
+    httplib2
     moto
     paramiko
     pbr
@@ -67,7 +69,7 @@ let
 in
 python3Packages.buildPythonPackage rec {
   pname = "cinder";
-  version = "25.0.0";
+  doCheck = false;
 
   pyproject = true;
   build-system = [
@@ -80,11 +82,14 @@ python3Packages.buildPythonPackage rec {
   ];
 
   propagatedBuildInputs = [
+    boto3
     castellan
     cursive
     ddt
     distro
     eventlet
+    google-api-python-client
+    httplib2
     keystoneauth1
     keystonemiddleware
     os-brick
@@ -106,6 +111,7 @@ python3Packages.buildPythonPackage rec {
     oslo-versionedobjects
     oslo-vmware
     osprofiler
+    paramiko
     pymysql
     python-glanceclient
     python-keystoneclient
@@ -123,11 +129,9 @@ python3Packages.buildPythonPackage rec {
   ];
 
   nativeCheckInputs = [
-    google-api-python-client
     hacking
     moto
     oslotest
-    paramiko
     pycodestyle
     qemu-utils
     sqlalchemy-utils
@@ -143,9 +147,19 @@ python3Packages.buildPythonPackage rec {
     stestr run --exclude-list ${excludeListFile}
   '';
 
-  src = fetchPypi {
-    inherit pname version;
-    sha256 = "sha256-buuMVplVemxjPbMsOsFVVwsKsH6OYiKpv6FtKup5NsU=";
-  };
+  postInstall = ''
+    install -Dm644 cinder/db/alembic.ini \
+      "$out/${python3Packages.python.sitePackages}/cinder/db/alembic.ini"
+  '';
 
+  pythonImportsCheck = [
+    "cinder.objects.snapshot"
+    "cinder.objects.volume"
+    "cinder.volume.drivers.nfs"
+    "cinder.volume.volume_utils"
+  ];
+
+  src = cinder-src;
+  version = "25.0.0-block-encryption-poc";
+  PBR_VERSION = "25.0.0";
 }
